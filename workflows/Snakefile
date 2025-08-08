@@ -31,7 +31,8 @@ rule all:
         expand("results/hits/{sample}.hits.tsv", sample=SAMPLES),
         "results/summary/per_strain_scores.tsv",
         "results/qc/roc_curves.pdf",
-        "results/phylogeny/placements.tsv"
+        "results/phylogeny/placements.tsv",
+        "results/fasta/positives.faa"
 
 def input_fasta_for(sample):
     for ext in ["fa", "fna", "fasta"]:
@@ -203,4 +204,7 @@ rule placements_placeholder:
         r"""
         echo -e "sample\tgene_id\tmodel\tlwr\tplacement_node" > {output.tsv}
         """
+
+include: "rules/phylogeny.smk"
+include: "rules/refs.smk"
 
