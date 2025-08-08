@@ -164,6 +164,18 @@ rule score_and_summarize:
         python scripts/score_hits.py --hits_dir results/hits --out_scores {output.scores} --out_heatmap {output.heatmap} --config config/config.yaml
         """
 
+rule export_positives:
+    input:
+        hits = expand("results/hits/{sample}.hits.tsv", sample=SAMPLES),
+        prots = expand("proteins/{sample}.faa", sample=SAMPLES)
+    output:
+        faa = "results/fasta/positives.faa"
+    conda: "../envs/base.yml"
+    shell:
+        r"""
+        python scripts/export_positives.py --proteins_dir proteins --hits_dir results/hits --out_faa {output.faa}
+        """
+
 rule qc_thresholds:
     input:
         src = "config/thresholds.seed.tsv"
