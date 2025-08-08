@@ -74,7 +74,8 @@ rule mmseqs_build_ref:
     input:
         lambda wildcards: POSITIVE_FASTAS
     output:
-        db = directory("refs/mmseqs/aaad_refdb")
+        db = "refs/mmseqs/aaad_refdb",
+        idx = "refs/mmseqs/aaad_refdb.index"
     threads: max(1, THREADS // 2)
     conda: "../envs/base.yml"
     shell:

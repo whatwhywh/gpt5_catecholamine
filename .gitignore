@@ -1,0 +1,24 @@
+# Snakemake
+.snakemake/
+*.snakemake*
+logs/
+tmp/
+
+# envs
+.mamba/
+.conda/
+
+# results
+results/
+!results/.gitkeep
+
+# local data
+Fasta_files/
+proteins/
+refs/mmseqs/aaad_ref.faa
+refs/mmseqs/aaad_refdb*
+refs/positives/backbone.aln
+
+# OS
+.DS_Store
+
