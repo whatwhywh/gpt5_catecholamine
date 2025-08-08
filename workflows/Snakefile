@@ -94,6 +94,7 @@ rule mmseqs_q2r:
         gpuflag = "--gpu 1" if USE_GPU else ""
     shell:
         r"""
+        mkdir -p tmp
         mmseqs easy-search {input.faa} {input.db} {output.tsv} tmp --threads {threads} {params.gpuflag} \
           --format-output "query,target,pident,evalue,bits,alnlen,qlen,tlen,qstart,qend,tstart,tend,qcov,tcov" > logs/{wildcards.sample}.mmseqs_q2r.log 2>&1
         """
@@ -110,6 +111,7 @@ rule mmseqs_r2q:
         gpuflag = "--gpu 1" if USE_GPU else ""
     shell:
         r"""
+        mkdir -p tmp
         mmseqs easy-search {input.db} {input.faa} {output.tsv} tmp --threads {threads} {params.gpuflag} \
           --format-output "query,target,pident,evalue,bits,alnlen,qlen,tlen,qstart,qend,tstart,tend,qcov,tcov" > logs/{wildcards.sample}.mmseqs_r2q.log 2>&1
         """
@@ -138,13 +140,13 @@ rule integrate_hits:
         tsv = "results/hits/{sample}.hits.tsv"
     conda: "../envs/base.yml"
     params:
-        hmm_list = lambda wildcards, input: ",".join(input.hmm_domtbls) if isinstance(input.hmm_domtbls, list) else str(input.hmm_domtbls),
-        rbh_opt = lambda wildcards, input: f"--rbh {input.rbh}" if isinstance(input.rbh, str) and len(input.rbh) > 0 else ""
+        hmm_opt = lambda wildcards, input: (f"--hmm {','.join(input.hmm_domtbls)}" if isinstance(input.hmm_domtbls, list) and len(input.hmm_domtbls) > 0 else (f"--hmm {input.hmm_domtbls}" if isinstance(input.hmm_domtbls, str) and len(input.hmm_domtbls) > 0 else "")),
+        rbh_opt = lambda wildcards, input: (f"--rbh {input.rbh}" if isinstance(input.rbh, str) and len(input.rbh) > 0 else "")
     shell:
         r"""
         python scripts/parse_hmm_tbl.py \
             --faa {input.faa} \
-            --hmm {params.hmm_list} \
+            {params.hmm_opt} \
             {params.rbh_opt} \
             --thresholds config/thresholds.seed.tsv \
             --out {output.tsv}
