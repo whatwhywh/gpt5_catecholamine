@@ -1,0 +1,36 @@
+threads: 16
+use_gpu: true
+min_cov: 0.75
+rbh:
+  min_id: 0.40
+  min_cov: 0.80
+  max_evalue: 1e-10
+scoring:
+  hmm: 3
+  rbh: 2
+  placement: 3
+  active_site: 2
+  domain_length: 1
+  synteny: 1
+length_rules:
+  TDC:
+    min: 520
+    max: 680
+  SadA:
+    min: 430
+    max: 520
+cutoffs:
+  TDC_bitscore: auto
+  SadA_bitscore: auto
+paths:
+  input_dir: ./Fasta_files
+  refs_dir: ./refs
+  results_dir: ./results
+phylogeny:
+  enabled: false
+  backbone_nseq: 1500
+qc:
+  enable_roc: false
+mmseqs:
+  use_rbh: true
+

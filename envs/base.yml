@@ -1,0 +1,29 @@
+name: aaad
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - snakemake-minimal>=7.30
+  - hmmer>=3.3
+  - mafft>=7.515
+  - trimal>=1.4.1
+  - prodigal>=2.6.3
+  - mmseqs2>=15.6
+  - iqtree>=2.2
+  - fasttree>=2.1
+  - epa-ng>=0.3.8
+  - seqkit>=2.6
+  - pandas>=2.2
+  - numpy>=1.26
+  - biopython>=1.83
+  - pyyaml>=6.0
+  - matplotlib-base>=3.8
+  - seaborn>=0.13
+  - scikit-learn>=1.4
+  - ghostscript  # optional, for some PDF backends
+  - pip:
+      - loguru>=0.7
+

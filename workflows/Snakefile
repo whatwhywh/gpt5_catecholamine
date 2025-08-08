@@ -1,0 +1,192 @@
+import os
+from glob import glob
+
+configfile: "config/config.yaml"
+
+INPUT_DIR = config.get("paths", {}).get("input_dir", "Fasta_files")
+THREADS = int(config.get("threads", 16))
+USE_GPU = bool(config.get("use_gpu", True))
+USE_RBH = bool(config.get("mmseqs", {}).get("use_rbh", True))
+PHY_ENABLED = bool(config.get("phylogeny", {}).get("enabled", False))
+
+ALLOWED_EXT = {"fa", "fna", "fasta"}
+def list_samples():
+    samples = []
+    for p in glob(os.path.join(INPUT_DIR, "*")):
+        bn = os.path.basename(p)
+        if "." not in bn:
+            continue
+        name, ext = bn.rsplit(".", 1)
+        if ext.lower() in ALLOWED_EXT:
+            samples.append(name)
+    return sorted(list(set(samples)))
+
+SAMPLES = list_samples()
+MODELS = ["TDC", "SadA"]
+POSITIVE_FASTAS = glob("refs/positives/*.faa")
+RBH_ENABLED = USE_RBH and len(POSITIVE_FASTAS) > 0
+
+rule all:
+    input:
+        expand("results/hits/{sample}.hits.tsv", sample=SAMPLES),
+        "results/summary/per_strain_scores.tsv",
+        "results/qc/roc_curves.pdf",
+        "results/phylogeny/placements.tsv"
+
+def input_fasta_for(sample):
+    for ext in ["fa", "fna", "fasta"]:
+        p = f"{INPUT_DIR}/{sample}.{ext}"
+        if os.path.exists(p):
+            return p
+    return f"{INPUT_DIR}/{sample}.fasta"  # default fallthrough
+
+rule predict_or_translate:
+    input:
+        lambda wildcards: input_fasta_for(wildcards.sample)
+    output:
+        faa = "proteins/{sample}.faa"
+    threads: THREADS
+    conda: "../envs/base.yml"
+    shell:
+        r"""
+        if grep -Eqi ">.*(cds|gene)" {input}; then \
+            python scripts/translate_orf.py --in {input} --out {output.faa}; \
+        else \
+            prodigal -p meta -i {input} -a {output.faa} -q; \
+        fi
+        """
+
+rule hmmsearch_model:
+    input:
+        faa = "proteins/{sample}.faa",
+        hmm = lambda wildcards: f"refs/hmm/{wildcards.model}.hmm"
+    output:
+        domtbl = "results/hmm/{sample}.{model}.domtbl"
+    threads: THREADS
+    conda: "../envs/base.yml"
+    shell:
+        """
+        hmmsearch --cpu {threads} --domtblout {output.domtbl} {input.hmm} {input.faa} > logs/{wildcards.sample}.{wildcards.model}.hmm.log 2>&1
+        """
+
+rule mmseqs_build_ref:
+    input:
+        lambda wildcards: POSITIVE_FASTAS
+    output:
+        db = directory("refs/mmseqs/aaad_refdb")
+    threads: max(1, THREADS // 2)
+    conda: "../envs/base.yml"
+    shell:
+        r"""
+        cat refs/positives/*.faa > refs/mmseqs/aaad_ref.faa
+        mmseqs createdb refs/mmseqs/aaad_ref.faa {output.db} > logs/mmseqs_createdb.log 2>&1
+        """
+
+rule mmseqs_q2r:
+    input:
+        faa = "proteins/{sample}.faa",
+        db = rules.mmseqs_build_ref.output.db
+    output:
+        tsv = "results/mmseqs/q2r/{sample}.tsv"
+    threads: THREADS
+    conda: "../envs/base.yml"
+    params:
+        gpuflag = "--gpu 1" if USE_GPU else ""
+    shell:
+        r"""
+        mmseqs easy-search {input.faa} {input.db} {output.tsv} tmp --threads {threads} {params.gpuflag} \
+          --format-output "query,target,pident,evalue,bits,alnlen,qlen,tlen,qstart,qend,tstart,tend,qcov,tcov" > logs/{wildcards.sample}.mmseqs_q2r.log 2>&1
+        """
+
+rule mmseqs_r2q:
+    input:
+        faa = "proteins/{sample}.faa",
+        db = rules.mmseqs_build_ref.output.db
+    output:
+        tsv = "results/mmseqs/r2q/{sample}.tsv"
+    threads: THREADS
+    conda: "../envs/base.yml"
+    params:
+        gpuflag = "--gpu 1" if USE_GPU else ""
+    shell:
+        r"""
+        mmseqs easy-search {input.db} {input.faa} {output.tsv} tmp --threads {threads} {params.gpuflag} \
+          --format-output "query,target,pident,evalue,bits,alnlen,qlen,tlen,qstart,qend,tstart,tend,qcov,tcov" > logs/{wildcards.sample}.mmseqs_r2q.log 2>&1
+        """
+
+rule mmseqs_rbh:
+    input:
+        q2r = "results/mmseqs/q2r/{sample}.tsv",
+        r2q = "results/mmseqs/r2q/{sample}.tsv"
+    output:
+        rbh = "results/mmseqs/{sample}.rbh.tsv"
+    conda: "../envs/base.yml"
+    shell:
+        r"""
+        python scripts/rbh_mmseqs.py --q2r {input.q2r} --r2q {input.r2q} --out {output.rbh} --config config/config.yaml
+        """
+
+rule integrate_hits:
+    input:
+        faa = "proteins/{sample}.faa",
+        hmm_domtbls = lambda wildcards: [
+            f"results/hmm/{wildcards.sample}.{m}.domtbl" for m in MODELS
+            if os.path.exists(f"refs/hmm/{m}.hmm")
+        ],
+        rbh = "results/mmseqs/{sample}.rbh.tsv" if RBH_ENABLED else []
+    output:
+        tsv = "results/hits/{sample}.hits.tsv"
+    conda: "../envs/base.yml"
+    params:
+        hmm_list = lambda wildcards, input: ",".join(input.hmm_domtbls) if isinstance(input.hmm_domtbls, list) else str(input.hmm_domtbls),
+        rbh_opt = lambda wildcards, input: f"--rbh {input.rbh}" if isinstance(input.rbh, str) and len(input.rbh) > 0 else ""
+    shell:
+        r"""
+        python scripts/parse_hmm_tbl.py \
+            --faa {input.faa} \
+            --hmm {params.hmm_list} \
+            {params.rbh_opt} \
+            --thresholds config/thresholds.seed.tsv \
+            --out {output.tsv}
+        """
+
+rule score_and_summarize:
+    input:
+        hits = expand("results/hits/{sample}.hits.tsv", sample=SAMPLES)
+    output:
+        scores = "results/summary/per_strain_scores.tsv",
+        heatmap = "results/vis/strain_pathway_heatmap.png"
+    conda: "../envs/base.yml"
+    shell:
+        r"""
+        python scripts/score_hits.py --hits_dir results/hits --out_scores {output.scores} --out_heatmap {output.heatmap} --config config/config.yaml
+        """
+
+rule qc_thresholds:
+    input:
+        src = "config/thresholds.seed.tsv"
+    output:
+        dst = "results/qc/thresholds.tsv"
+    shell:
+        "cp {input.src} {output.dst}"
+
+rule plot_roc:
+    input:
+        thresholds = rules.qc_thresholds.output.dst,
+        hits = expand("results/hits/{sample}.hits.tsv", sample=SAMPLES)
+    output:
+        pdf = "results/qc/roc_curves.pdf"
+    conda: "../envs/base.yml"
+    shell:
+        r"""
+        python scripts/plot_roc.py --hits_dir results/hits --thresholds {input.thresholds} --out {output.pdf}
+        """
+
+rule placements_placeholder:
+    output:
+        tsv = "results/phylogeny/placements.tsv"
+    shell:
+        r"""
+        echo -e "sample\tgene_id\tmodel\tlwr\tplacement_node" > {output.tsv}
+        """
+

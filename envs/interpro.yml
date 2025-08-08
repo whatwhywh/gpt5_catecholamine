@@ -1,0 +1,9 @@
+name: interpro
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - openjdk>=17
+  - interproscan  # 주: 무거움. 필요 시에만 활성화
+
