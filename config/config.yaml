@@ -1,5 +1,5 @@
-threads: 16
-use_gpu: true
+threads: 8
+use_gpu: false
 min_cov: 0.75
 rbh:
   min_id: 0.40

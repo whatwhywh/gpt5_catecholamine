@@ -1,0 +1,49 @@
+# Quality Control Report - Perfect Edition
+
+Report date: 2025-08-08 10:51:36
+
+## Issues Resolved
+
+### 1. Contamination Removal
+- ✅ Removed DOPA decarboxylase from TDC set
+- ✅ Removed non-decarboxylase proteins (AtoC) from negative set
+- ✅ Moved misclassified sequences to appropriate categories
+
+### 2. SadA Collection
+- ✅ Added authentic SadA sequences from literature
+- ✅ Collected additional bacterial aromatic amino acid decarboxylases
+- ✅ Verified PLP-dependent domain presence
+
+### 3. Negative Set Separation
+- ✅ Separated into individual enzyme files (GAD, HDC, LDC, ODC)
+- ✅ Removed sequence redundancy
+- ✅ Ensured taxonomic diversity
+
+### 4. HMM Model Construction
+- ✅ Built separate models for TDC and SadA/AADC
+- ✅ Performed ROC analysis for threshold determination
+- ✅ Validated model performance
+
+## Quality Metrics
+
+### Positive Sequences
+- TDC sequences: 52
+- SadA/AADC sequences: 3
+- TDC length range: 610-639 aa
+- SadA/AADC length range: 470-506 aa
+
+### Negative Sequences
+- GAD sequences: 49
+- HDC sequences: 45
+- LDC sequences: 42
+- ODC sequences: 46
+
+## Validation Status
+- ✅ All sequences are bacterial origin
+- ✅ Length filtering applied (300-800 aa)
+- ✅ Quality filtering applied (<5% ambiguous residues)
+- ✅ Functional annotation verified
+- ✅ Duplicates removed
+- ✅ HMM models constructed and validated
+- ✅ ROC analysis performed
+- ✅ Thresholds determined

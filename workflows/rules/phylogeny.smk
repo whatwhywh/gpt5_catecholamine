@@ -1,4 +1,4 @@
-configfile: "../config/config.yaml"
+# configfile is defined in the top-level Snakefile; do not redefine here
 
 rule build_backbone_tree:
     input:
@@ -6,7 +6,7 @@ rule build_backbone_tree:
     output:
         tree = "results/phylogeny/aaad_backbone_tree.nwk"
     threads: 8
-    conda: "../envs/base.yml"
+    conda: "../../envs/base.yml"
     shell:
         """
         if command -v iqtree2 >/dev/null 2>&1; then \

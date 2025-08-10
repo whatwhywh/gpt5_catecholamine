@@ -1,0 +1,67 @@
+# Catecholamine Decarboxylase Reference Set - Perfect Edition
+
+Creation date: 2025-08-08 10:51:36
+Version: Perfect v1.0.0
+
+## Sequence Files
+
+### AADC_sequences.faa
+- Count: 2 sequences
+- Length range: 470-480 aa
+- Average length: 475.0 aa
+- Top organisms: Bacillus atrophaeus (1), Pseudomonas putida (strain ATCC 47054 / DSM 6125 / CFBP 8728 / NCIMB 11950 / KT2440) (1)
+
+### GAD_sequences.faa
+- Count: 49 sequences
+- Length range: 408-466 aa
+- Average length: 459.4 aa
+- Top organisms: Escherichia coli (13), Enterococcus ureasiticus (2), Acidithiobacillus ferrivorans (2), Escherichia coli O6:K15:H31 (strain 536 / UPEC) (2), Enterococcus devriesei (2)
+
+### HDC_sequences.faa
+- Count: 45 sequences
+- Length range: 309-431 aa
+- Average length: 368.1 aa
+- Top organisms: Limosilactobacillus reuteri (3), Pseudomonas fluorescens (2), Pseudomonas frederiksbergensis (2), Pseudomonas soli (2), Streptococcus thermophilus (2)
+
+### LDC_sequences.faa
+- Count: 42 sequences
+- Length range: 541-713 aa
+- Average length: 706.9 aa
+- Top organisms: Escherichia coli (24), Escherichia coli O6:K15:H31 (strain 536 / UPEC) (1), Escherichia sp. E1130 (1), Escherichia sp. E3659 (1), Pseudescherichia vulneris NBRC 102420 (1)
+
+### ODC_sequences.faa
+- Count: 46 sequences
+- Length range: 371-450 aa
+- Average length: 388.5 aa
+- Top organisms: Pseudomonas syringae (4), Pseudomonas amygdali pv. mori (1), Pseudomonas syringae pv. ribicola (1), Pseudomonas syringae pv. coryli (1), Rhodopseudomonas sp. AAP120 (1)
+
+### SadA_AADC_sequences.faa
+- Count: 3 sequences
+- Length range: 470-506 aa
+- Average length: 485.3 aa
+- Top organisms: Bacillus atrophaeus (1), Pseudomonas putida (strain ATCC 47054 / DSM 6125 / CFBP 8728 / NCIMB 11950 / KT2440) (1), Staphylococcus aureus (1)
+
+### SadA_sequences.faa
+- Count: 1 sequences
+- Length range: 506-506 aa
+- Average length: 506.0 aa
+- Top organisms: Staphylococcus aureus (1)
+
+### TDC_sequences.faa
+- Count: 52 sequences
+- Length range: 610-639 aa
+- Average length: 621.1 aa
+- Top organisms: Enterococcus faecium (8), Levilactobacillus brevis (5), Enterococcus mundtii (3), Enterococcus lactis (3), Enterococcus sp. VV15 (2)
+
+### other_decarboxylases.faa
+- Count: 182 sequences
+- Length range: 309-713 aa
+- Average length: 476.0 aa
+- Top organisms: Escherichia coli (37), Limosilactobacillus reuteri (4), Pseudomonas fluorescens (4), Pseudomonas syringae (4), Escherichia coli O6:K15:H31 (strain 536 / UPEC) (3)
+
+## Summary
+Total sequences: 422
+
+Positive sequences (catecholamine-related): 55
+Negative sequences (other decarboxylases): 182
+Positive/Negative ratio: 0.30

@@ -1,4 +1,3 @@
 model	bitscore_cut	evalue_hint	min_query_cov	min_model_cov
-TDC	220	1e-20	0.75	0.75
-SadA	180	1e-15	0.75	0.75
-
+TDC	1045.2	1e-20	0.75	0.75
+SadA	263.7	1e-15	0.75	0.75

@@ -1,0 +1,72 @@
+# Validation Report
+
+Validation date: 2025-08-08 10:51:36
+
+## HMM Model Validation
+
+### TDC
+- Model file: TDC.hmm
+- Status: ✅ Successfully built
+- Thresholds: Available in thresholds.tsv
+
+### other_decarboxylases
+- Model file: other_decarboxylases.hmm
+- Status: ✅ Successfully built
+- Thresholds: Available in thresholds.tsv
+
+## Sequence Validation
+
+### TDC_sequences.faa
+- Sequence count: 52
+- Length validation: 610-639 aa
+- Quality issues: 0/52 sequences
+- Taxonomic diversity: 30 different organisms
+
+### AADC_sequences.faa
+- Sequence count: 2
+- Length validation: 470-480 aa
+- Quality issues: 0/2 sequences
+- Taxonomic diversity: 2 different organisms
+
+### SadA_AADC_sequences.faa
+- Sequence count: 3
+- Length validation: 470-506 aa
+- Quality issues: 0/3 sequences
+- Taxonomic diversity: 3 different organisms
+
+### SadA_sequences.faa
+- Sequence count: 1
+- Length validation: 506-506 aa
+- Quality issues: 0/1 sequences
+- Taxonomic diversity: 1 different organisms
+
+### GAD_sequences.faa
+- Sequence count: 49
+- Length validation: 408-466 aa
+- Quality issues: 0/49 sequences
+- Taxonomic diversity: 33 different organisms
+
+### HDC_sequences.faa
+- Sequence count: 45
+- Length validation: 309-431 aa
+- Quality issues: 0/45 sequences
+- Taxonomic diversity: 39 different organisms
+
+### LDC_sequences.faa
+- Sequence count: 42
+- Length validation: 541-713 aa
+- Quality issues: 0/42 sequences
+- Taxonomic diversity: 19 different organisms
+
+### ODC_sequences.faa
+- Sequence count: 46
+- Length validation: 371-450 aa
+- Quality issues: 0/46 sequences
+- Taxonomic diversity: 43 different organisms
+
+### other_decarboxylases.faa
+- Sequence count: 182
+- Length validation: 309-713 aa
+- Quality issues: 0/182 sequences
+- Taxonomic diversity: 126 different organisms
+

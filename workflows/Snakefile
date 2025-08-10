@@ -50,10 +50,13 @@ rule predict_or_translate:
     conda: "../envs/base.yml"
     shell:
         r"""
+        set -e
         if grep -Eqi ">.*(cds|gene)" {input}; then \
             python scripts/translate_orf.py --in {input} --out {output.faa}; \
         else \
-            prodigal -p meta -i {input} -a {output.faa} -q; \
+            ( prodigal -p meta -i {input} -a {output.faa} -q ) || \
+            ( echo "[WARN] prodigal failed for {input}. Falling back to 6-frame translation." >&2; \
+              python scripts/translate_orf.py --in {input} --out {output.faa} ); \
         fi
         """
 
